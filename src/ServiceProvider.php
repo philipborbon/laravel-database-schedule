@@ -36,8 +36,12 @@ class ServiceProvider extends LaravelServiceProvider
         }
 
         $this->app->extend(BaseSchedule::class, function () use ($config) {
-            return (new Schedule($this->scheduleTimezone($config)))
-                ->useCache($this->scheduleCache());
+            $schedule = new Schedule($this->scheduleTimezone($config));
+
+            $schedule->useCache($this->scheduleCache());
+            $schedule->loadCommands($this->app);
+
+            return $schedule;
         });
     }
 

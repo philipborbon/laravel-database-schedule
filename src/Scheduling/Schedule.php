@@ -9,14 +9,8 @@ use Illuminate\Console\Scheduling\Schedule as BaseSchedule;
 
 class Schedule extends BaseSchedule
 {
-    protected $isScheduleAdded = false;
-
-    public function dueEvents($app)
+    public function loadCommands($app)
     {
-        if ($this->isScheduleAdded) {
-            return parent::dueEvents($app);
-        }
-
         $model = $app->make(Config::get('database-schedule.model'));
         $schedules = Config::get('database-schedule.cache.enabled') ? $this->getFromCache($model) : $model->all()->toArray();
 
@@ -31,10 +25,8 @@ class Schedule extends BaseSchedule
                 $event->withoutOverlapping();
             }
         }
-
-        return parent::dueEvents($app);
     }
-
+    
     protected function getFromCache(Model $model)
     {
         $store = Config::get('database-schedule.cache.store', 'file');
